@@ -68,6 +68,10 @@ Note that the path after `-v $(pwd):` and the path after `-w` are the same, and 
 If you have not run `sh scripts/install_frankmocap.sh` but intend to do it in the docker,
 see the subsection "Troubleshooting" below in order to get details regarding it.
 
+The image is based on `pytorch/pytorch:1.6.0-cuda10.1-cudnn7-runtime`
+which, in turn, is based on `nvidia/cuda:10.1-cudnn7-devel-ubuntu18.04` .
+Thus, refer to their documentation in order to enable GPU in the container and learn other advanced options. 
+
 ### Troubleshooting
 
 * After the run I see "The setup routine is needed, but the setup script is not located..."
