@@ -1,2 +1,79 @@
-# frankmocap-docker
-A Docker environment for [frankmocap](https://github.com/facebookresearch/frankmocap)
+# Docker image for [FrankMocap](https://github.com/facebookresearch/frankmocap)
+
+The page of the image on Dockerhub: https://hub.docker.com/r/nickveld/frankmocap-env
+
+## Preparation
+
+### Packages
+In case the usage of this image
+you can skip `conda` setup, installing packages using `apt-get`, `conda` and `pip`
+listed in the installation guide from the repository of `frankmocap`.
+
+### Optional: Building
+
+There is no need to rebuild image but in case of rebuilding
+you need to place `requirements.txt` from the `docs` directory of the repository of `frankmocap` next to the Dockerfile
+
+Also, you can download supplementary files (the details below) into the image using the following command:
+```
+ARG INSTALLATION_PATH="TYPE THE PATH HERE"
+
+WORKDIR ${INSTALLATION_PATH}
+COPY scripts scripts
+# `find | xargs sed` line is aimed to reduce the number of `wget` progress updates
+# because each update causes new line in the `docker build` output
+RUN find scripts -name '*.sh' -type f | xargs sed -i 's/wget/wget --progress=dot:giga /g' \
+  && sh scripts/install_frankmocap.sh \
+  && rm -r scripts
+```
+
+### Optional: `pytorch3d`
+If you need the prebuilt image with `pytorch3d`
+replace `nickveld/frankmocap-env` (the image name) with `nickveld/frankmocap-env:pytorch3d`.
+In case building add the build argument `PIP_AUX_PKGS=pytorch3d`. (Example: `docker build --build-arg PIP_AUX_PKGS=pytorch3d`)
+
+### Supplementary files and packages from `git`
+
+The installation scripts from the repository of `frankmocap` is not good for the usage with the docker environments.
+Thus I have slightly modificated them, see this
+[pull request](https://github.com/facebookresearch/frankmocap/pull/108)
+or [this branch](https://github.com/NickVeld/frankmocap/tree/download-and-setup-apart).
+The docker image and this instruction assume that you have the same content of the `scripts` directory.
+
+After you cloned the repository of `frankmocap` and applied the changes to the files inside the `scripts` directory,
+change your working directory to the root of the repository (the directory with `scripts`, `LICENSE`, ...).
+You can run `sh scripts/install_frankmocap.sh` either in the host system
+or in the docker container (see the "Usage" section).
+
+### SMPL/SMPLX models
+
+Follow the minisection "Setting SMPL/SMPL-X Models"
+in [the original installation guide](https://github.com/facebookresearch/frankmocap/blob/master/docs/INSTALL.md).
+
+### Filesystem tree validation
+
+After running `sh scripts/install_frankmocap.sh` and downloading the SMPL/SMPLX models compare your filesystem tree under the root of the repository with the tree in the section "Folder hierarchy"
+in [the original installation guide](https://github.com/facebookresearch/frankmocap/blob/master/docs/INSTALL.md#folder-hierarchy).
+In Unix-like systems (including the system inside the docker container) the `tree` command can assist you.
+
+## Usage
+
+Basic run command is simple (assuming that your working directory
+is the root of the repository (the directory with `scripts`, `LICENSE`, ...):
+
+`docker run -it --rm -v $(pwd):/opt/app -w /opt/app nickveld/frankmocap-env`
+
+Note that the path after `-v $(pwd):` and the path after `-w` are the same, and **it is important**!
+
+If you have not run `sh scripts/install_frankmocap.sh` but intend to do it in the docker,
+see the subsection "Troubleshooting" below in order to get details regarding it.
+
+### Troubleshooting
+
+* After the run I see "The setup routine is needed, but the setup script is not located..."
+  * Check that the path between `-v` and `:` points to the repository root (`$(pwd)` means "the current directory")
+  * Check that the path after `-v $(pwd):` and the path after `-w` are the same
+* After the run I see "python: can't open file 'setup.py': \[Errno 2\] No such file or directory"
+  * If you have not run `sh scripts/install_frankmocap.sh` you must run it just after you see the error message.
+    (Or run it on the host system as described in the subsection "Supplementary files and packages from `git`")
+  * Check the filesystem tree as described in the subsection "Filesystem tree validation"
