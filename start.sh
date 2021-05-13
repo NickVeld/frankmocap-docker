@@ -25,7 +25,12 @@ setup_package_in_develop_mode() {
   fi
 }
 
+
 setup_package_in_develop_mode "faster-rcnn.egg-link" "faster_rcnn.egg-info" \
     "detectors/hand_object_detector/lib" "scripts/compile_hand_detectors.sh"
 
-exec "$@"
+if [ "${USE_XVFB}" = "1" ] ; then
+  xvfb-run -a "$@"
+else
+  exec "$@"
+fi

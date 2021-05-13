@@ -101,6 +101,24 @@ Note that the path after `-v $(pwd):` and the path after `-w` are the same, and 
 If you have not run `sh scripts/install_frankmocap.sh` but intend to do it in the docker,
 see the subsection "Troubleshooting" below in order to get details regarding it.
 
+### Running without a display
+
+If you want to run a demo from `frankmocap` you need most likely to use `xvfb-run`
+that allows to run the demo without a display.
+But `exec xvfb-run` does not work properly somewhy
+(`exec "$@"` is a traditional way to execute the provided docker command).
+For example, we need to run the following command: `python -m demo.demofrankmocap YOUR_ARGS`.
+One way is the folowing one:
+```
+user@host_system:/path/to/frankmocap$ docker run -it --rm -v $(pwd):/opt/app -w /opt/app nickveld/frankmocap-env
+root@docker_container:/opt/app$ xvfb-run -a python -m demo.demofrankmocap YOUR_ARGS
+```
+
+But also a one line way is implemented (using the special environment variable `USE_XVFB` set with `-e USE_XVFB=1`):
+```
+user@host_system:/path/to/frankmocap$ docker run -it --rm -v $(pwd):/opt/app -w /opt/app -e USE_XVFB=1 nickveld/frankmocap-env python -m demo.demofrankmocap YOUR_ARGS
+```
+
 The image is based on `pytorch/pytorch:1.6.0-cuda10.1-cudnn7-runtime`
 which, in turn, is based on `nvidia/cuda:10.1-cudnn7-devel-ubuntu18.04` .
 Thus, refer to their documentation in order to enable GPU in the container and learn other advanced options. 
