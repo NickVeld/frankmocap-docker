@@ -48,10 +48,10 @@ For other versions:
 1. See https://sourceforge.net/p/freeglut/code/HEAD/tree/tags/
 2. Select the version and enter into its folder
 3. Click on "Download Snapshot"
-4. Cancel downloading and copy the direct link
+4. Cancel the downloading and copy the direct link
 5. Replace the URL argument of `wget` with the obtained link
 
-Although, I am not successed with building becuase
+Although, I am not successed with the building because
 ```
 /tmp/freeglut-code-r1865-tags-FG_3_2_1/include/GL/freeglut_std.h:144:13: fatal error: GL/glu.h: No such file or directory
     include <GL/glu.h>
