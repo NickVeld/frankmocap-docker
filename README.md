@@ -132,3 +132,5 @@ Thus, refer to their documentation in order to enable GPU in the container and l
   * If you have not run `sh scripts/install_frankmocap.sh` you must run it just after you see the error message.
     (Or run it on the host system as described in the subsection "Supplementary files and packages from `git`")
   * Check the filesystem tree as described in the subsection "Filesystem tree validation"
+* After a demo from `frankmocap` execution finishes I see `Segmentation fault` and get exit code 139
+  * I do not know how to fix it. I only have figured out that there is a problem with `opengl` renderer (or its compatibility with `xvfb-run`). You can just switch to another renderer and the message disappears.
