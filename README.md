@@ -27,6 +27,39 @@ RUN find scripts -name '*.sh' -type f | xargs sed -i 's/wget/wget --progress=dot
   && rm -r scripts
 ```
 
+### Optional: Building `freegult`
+
+If you want to build `freegult` you can you the following lines as a starter for Dockerfile:
+```
+RUN apt-get update \
+  && apt-get install -y cmake unzip libx11-dev libxi-dev \
+  && rm -rf /var/lib/apt/lists/*
+WORKDIR /tmp
+RUN wget https://sourceforge.net/code-snapshots/svn/f/fr/freeglut/code/freeglut-code-r1865-tags-FG_3_2_1.zip \
+  && unzip freeglut-code-r*-tags-FG_*.zip \
+  && cd freeglut-code-r*-tags-FG_* \
+  && cmake . \
+  && make \
+  && cd .. \
+  && rm -r freeglut-code-r*-tags-FG_*
+```
+
+For other versions:
+1. See https://sourceforge.net/p/freeglut/code/HEAD/tree/tags/
+2. Select the version and enter into its folder
+3. Click on "Download Snapshot"
+4. Cancel downloading and copy the direct link
+5. Replace the URL argument of `wget` with the obtained link
+
+Although, I am not successed with building becuase
+```
+/tmp/freeglut-code-r1865-tags-FG_3_2_1/include/GL/freeglut_std.h:144:13: fatal error: GL/glu.h: No such file or directory
+    include <GL/glu.h>
+            ^~~~~~~~~~
+```
+
+I assume that somewhere in the files for CMake `libGL` library linking is missing.
+
 ### Optional: `pytorch3d`
 If you need the prebuilt image with `pytorch3d`
 replace `nickveld/frankmocap-env` (the image name) with `nickveld/frankmocap-env:pytorch3d`.

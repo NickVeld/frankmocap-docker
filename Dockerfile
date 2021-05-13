@@ -19,17 +19,22 @@ MAINTAINER https://github.com/NickVeld
 LABEL maintainer="https://github.com/NickVeld"
 
 # In addition to the packages mentioned in the installation guide of the app
-# (ffmpeg, libosmesa6-dev), the following packages are needed in fact.
+# (ffmpeg, libosmesa6-dev), all the following packages are needed in fact.
 #
 # git and wget are needed only for downloading supplementary materials
 # so you can remove them in case you have the materials and mount them by yourself.
 #
+# The installation of freegult3 cures
+# "OpenGL.error.NullFunctionError: Attempt to call an undefined function glutInit, check for bool(glutInit) before calling"
+#
 # The link creation (ln -s) is needed because otherwise the used compliation flags -lGL and -lGLU do not work
+
 RUN apt-get update \
-   && apt-get install -y \
+  && apt-get install -y \
     build-essential \
     ffmpeg \
     libosmesa6-dev \
+    freeglut3 \
     libglu1-mesa \
     xvfb \
     git \
@@ -47,11 +52,15 @@ COPY requirements.txt /tmp/requirements.txt
 RUN pip install -r /tmp/requirements.txt \
   && rm /tmp/requirements.txt
 
+# Missed Python requirements installation
+RUN pip install loguru
+
 # In order to install "pytorch3d" using "pip" set PIP_AUX_PKGS to "pytorch3d"
 ARG PIP_AUX_PKGS=""
 RUN [ -z "${PIP_AUX_PKGS}" ] || pip install ${PIP_AUX_PKGS}
 
 COPY start.sh /start.sh
 
+WORKDIR /workspace
 ENTRYPOINT ["/start.sh"]
 CMD ["/bin/bash"]
